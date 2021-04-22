@@ -232,7 +232,7 @@ const emailReminder = async () => {
     if ( bSend) {
       request.post({ headers: {
         'content-type' : 'application/json',
-        'Authorization' : 'Bearer SG.VtB5V1sqR8S6a9Q1O5dqqw.ssMEEtsEMqMnNWqMOFAXwlFMue8KYsCa9INd-ZaoVzs'
+        'Authorization' : 'Bearer ' + process.env.SENDGRID_API_KEY
       }
       , url: "https://api.sendgrid.com/v3/mail/send", json:{
       personalizations: [

@@ -18,7 +18,6 @@ const CalendarPage = () => {
   const { schedules, error } = useSelector(state => state.schedule);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedSchedule, setSelectedSchdule] = useState({})
-  console.log("CalendarPage started!", new Date())
   
   useEffect(() => {
     dispatch(examsAction.getExams())

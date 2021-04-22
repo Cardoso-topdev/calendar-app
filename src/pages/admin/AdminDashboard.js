@@ -26,6 +26,7 @@ import { useDispatch } from 'react-redux';
 import { tasktypeActions } from '../../actions/tasktypeAction';
 import { taskActions } from '../../actions/taskAction';
 import { examsAction } from '../../actions/examsAction';
+import logoImg from '../../assets/imgs/securitiesce_logo.png';
 
 const drawerWidth = 240;
 
@@ -132,7 +133,7 @@ const AdminDashboard = ({window}) => {
         <Toolbar>
           <div className="app-sidebar-logo">
             <a href="/">
-              <img src="https://securitiesce.com/media/securitiesce_logo.png" alt=""/>
+              <img src={logoImg} alt=""/>
             </a>
           </div>
           <IconButton

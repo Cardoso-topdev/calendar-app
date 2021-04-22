@@ -23,6 +23,7 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { Grid, Typography } from '@material-ui/core';
 import { getTimeFromMins, getTimeFromHours } from '../helper/utils'
 import LoadModal from './modals/LoadModal';
+import logoImg from '../assets/imgs/securitiesce_logo.png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -180,7 +181,7 @@ const Sidebar = () => {
       <ValidatorForm onSubmit={submitHandler} className={classes.root}>
         <div className="app-sidebar-logo">
           <a href="https://securitiesce.com">
-            <img src="https://securitiesce.com/media/securitiesce_logo.png" alt=""/>
+            <img src={logoImg} alt=""/>
           </a>
         </div>
         <div className="app-sidebar-section">
