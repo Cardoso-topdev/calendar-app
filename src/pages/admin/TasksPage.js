@@ -49,7 +49,12 @@ const TasksPage = () => {
       </Grid>
       {
         open &&
-        <EdittaskModal feedData={tasks} open={open} setOpen={setOpen} isAdd={isAdd} pageIndex="1"/>
+        <EdittaskModal 
+          feedData={tasks} 
+          open={open} 
+          setOpen={setOpen} 
+          isAdd={isAdd} 
+          pageIndex="1"/>
       }
     </div>
   )

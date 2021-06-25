@@ -1,0 +1,16 @@
+.app-sidebar label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated{
+  transform: translate(0, 12px) scale(1);
+}
+
+.app-sidebar label.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-shrink.MuiFormLabel-filled{
+  transform: translate(0, 1.5px) scale(0.75);
+}
+.app-sidebar-section .MuiGrid-container{
+  width: 80%;
+  margin: 0 0 0 auto;
+}
+
+.app-sidebar-section .MuiTextField-root label, 
+.app-sidebar-section .MuiTextField-root input{
+  font-size: 12px;
+}

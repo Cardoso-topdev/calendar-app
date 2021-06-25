@@ -86,7 +86,7 @@ const EditExamModal = ({ open, setOpen, isAdd: flag, feedData, tabValue, setTask
     initVideos = feedData[feedData.findIndex(datum => datum._id === id)].videos;
   }
   const { taskTypes } = useSelector(state => state.taskTypes)
-  let filteredTaskTypes = taskTypes.filter( (item, idx) => (idx !== 1))
+  let filteredTaskTypes = taskTypes
   //set the initial states of name
   const [taskName, setTaskname] = useState(initTaskname);
   const [videoTaskId, setVideoTaskId] = useState(initvideoTaskId);
@@ -248,8 +248,8 @@ const EditExamModal = ({ open, setOpen, isAdd: flag, feedData, tabValue, setTask
             </FormControl>
             <FormControl className={classes.formControl}>
               <TextValidator
-                label={taskTypeName.includes('video') ? 'Video Number' : ((tabValue === 1) ? 'Test Number' : 'Chapter Number') }
-                name={taskTypeName.includes('video') ? 'Video Number' : ((tabValue === 1) ? 'Test Number' : 'Chapter Number')}
+                label={taskTypeName.includes('video') ? 'Video Number' : ((tabValue === 2) ? 'Test Number' : 'Chapter Number') }
+                name={taskTypeName.includes('video') ? 'Video Number' : ((tabValue === 2) ? 'Test Number' : 'Chapter Number')}
                 variant="outlined"
                 value={chapterNum}
                 className={classes.validatorForm}
@@ -287,7 +287,7 @@ const EditExamModal = ({ open, setOpen, isAdd: flag, feedData, tabValue, setTask
                     required
                   />
                 </FormControl>
-                {(tabValue !== 1) &&  <><FormControl className={classes.formControl}>
+                {(tabValue !== 2) &&  <><FormControl className={classes.formControl}>
                   <TextValidator
                     label={taskTypeName.includes('video') ? 'Video Spin Time' : 'Number of Pages'}
                     name={taskTypeName.includes('video') ? 'Video Spin Time' : 'Number of Pages'}

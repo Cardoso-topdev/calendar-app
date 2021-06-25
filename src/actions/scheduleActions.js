@@ -58,6 +58,7 @@ const getSchdules = (email) => async (dispatch, getState) => {
 
     const { data } = await axios.post(`${API_URL}/schedules/get`, { email })
 
+    console.log("LOAD: ", data)
     dispatch({
       type: SCHEDULE_SET_SUCCESS,
       payload: data.schedule

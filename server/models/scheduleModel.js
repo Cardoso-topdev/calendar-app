@@ -3,7 +3,9 @@ import mongoose from 'mongoose';
 const workdaySchema = mongoose.Schema({
   id: Number,
   value: String,
-  isChecked: Boolean
+  isChecked: Boolean,
+  workHour: Number,
+  workMin: Number
 })
 
 /**

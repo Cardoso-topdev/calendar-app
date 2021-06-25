@@ -55,6 +55,24 @@ const createData = (feedData, onUpdateClick) => {
   })
 };
 
+const createVideoRows = (videoData, tasks, taskType, onUpdateClick) => {
+  // console.log("CreateVideoRows => tasks: ", tasks, videoData)
+  let returnVal = videoData.map( (item, idx) => {
+    let videoItem = tasks.filter(task => task._id === item)
+    videoItem = videoItem[0]
+    return {
+      name: videoItem.name,
+      spinTime: videoItem.spinTime,
+      time:videoItem.time,
+      taskType: taskType._id,
+      action: <IconButton onClick={() => onUpdateClick(videoItem._id)}>
+      <EditIcon />
+    </IconButton>
+    }
+  })
+  // console.log("CreateVideoRows => returnValue: ", returnVal)
+  return returnVal
+}
 /**
  * 
  * @param {string} order 
@@ -108,7 +126,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EnhancedTable = ({ setOpen, setIsAdd, feedData, pageIndex, tabValue, setTasks, setIsloading }) => {
+const EnhancedTable = ({ 
+  setOpen, 
+  setIsAdd, 
+  feedData, 
+  pageIndex, 
+  tabValue, 
+  setTasks, 
+  setIsloading,
+  setTaskModalOpen
+}) => {
   const navigate = useNavigate()
   /**
    * 
@@ -124,6 +151,15 @@ const EnhancedTable = ({ setOpen, setIsAdd, feedData, pageIndex, tabValue, setTa
     }
   }, [setIsAdd, setOpen, pageIndex, navigate])
 
+  const onVideoEditClick = useCallback( id => {
+    // if (pageIndex === '0') {
+    //   navigate(`/admin/exams/edit `, { state: { id: id } })
+    // } else {
+      setIsAdd({ isAdd: false, id: id });
+      setTaskModalOpen(true);
+    // }
+  })
+
   const classes = useStyles();
   /**
    * get the currnet links state and dispatch function from the redux store
@@ -134,12 +170,34 @@ const EnhancedTable = ({ setOpen, setIsAdd, feedData, pageIndex, tabValue, setTa
    * create the data for the data table from the current links data
    */
   const { taskTypes } = useSelector(state => state.taskTypes)
-  let filteredTaskTypes = taskTypes.filter( (item, idx) => (idx !== 1) )
+  const { tasks } = useSelector(state => state.tasks)
+  
+  let filteredTaskTypes = taskTypes
+  let videoData = []
   // console.log("taskTypes: ", filteredTaskTypes, feedData, tabValue)
   if (tabValue !== undefined) {
+    if ( tabValue === 1){
+      let tempReadingData = feedData.filter(data => data.taskType === filteredTaskTypes[0]._id)
+      tempReadingData.forEach(item => {
+        item.videos.forEach( video => {
+          videoData.push(video)
+        })
+      });
+      
+      // console.log("VideoData: ", videoData)
+    }
     feedData = feedData.filter(data => data.taskType === filteredTaskTypes[tabValue]._id)
   }
-  const rows = useMemo(() => createData(feedData, onUpdateClick), [feedData, onUpdateClick]);
+  let rows
+  let memoFunction
+
+  if ( tabValue === 1){
+    memoFunction = () => createVideoRows(videoData, tasks, taskTypes[1], onVideoEditClick);
+  } else {
+    memoFunction = () => createData(feedData, onUpdateClick);
+  }
+  rows = useMemo(memoFunction, [feedData, videoData, onUpdateClick])
+  // console.log("rows ===> ", rows)
 
   const getTasktypeName = useCallback((id) => {
     const seletedType = filteredTaskTypes.filter(type => type._id === id)

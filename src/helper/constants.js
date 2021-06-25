@@ -4,13 +4,13 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import SortIcon from '@material-ui/icons/Sort';
 
 export const weeks = [
-  {id: 1, value: "Monday", isChecked: false},
-  {id: 2, value: "Tuesday", isChecked: false},
-  {id: 3, value: "Wednesday", isChecked: false},
-  {id: 4, value: "Thursday", isChecked: false},
-  {id: 5, value: "Friday", isChecked: false},
-  {id: 6, value: "Saturday", isChecked: false},
-  {id: 0, value: "Sunday", isChecked: false},
+  {id: 1, value: "Monday",    isChecked: false, workHour: 0, workMin: 0},
+  {id: 2, value: "Tuesday",   isChecked: false, workHour: 0, workMin: 0},
+  {id: 3, value: "Wednesday", isChecked: false, workHour: 0, workMin: 0},
+  {id: 4, value: "Thursday",  isChecked: false, workHour: 0, workMin: 0},
+  {id: 5, value: "Friday",    isChecked: false, workHour: 0, workMin: 0},
+  {id: 6, value: "Saturday",  isChecked: false, workHour: 0, workMin: 0},
+  {id: 0, value: "Sunday",    isChecked: false, workHour: 0, workMin: 0},
 ]
 
 export const menuLists = [
@@ -25,7 +25,7 @@ export const menuLists = [
     link: "/admin/exams"
   },
   {
-    name: "Tasks",
+    name: "Video Tasks",
     icon: <AssignmentIcon />,
     link: "/admin/tasks"
   },

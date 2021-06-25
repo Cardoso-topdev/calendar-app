@@ -13,7 +13,7 @@ const initialState = {
 export const scheduleReducer = (state = initialState, action) => {
   switch(action.type) {
     case SCHEDULE_REQUEST:
-      return { ...state, isLoading: true }
+      return { ...initialState, isLoading: true }
     case SCHEDULE_SET_SUCCESS:
       return { 
         ...state,

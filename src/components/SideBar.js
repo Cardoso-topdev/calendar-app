@@ -24,6 +24,7 @@ import { Grid, Typography } from '@material-ui/core';
 import { getTimeFromMins, getTimeFromHours } from '../helper/utils'
 import LoadModal from './modals/LoadModal';
 import logoImg from '../assets/imgs/securitiesce_logo.png';
+import "./style.css"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,10 +37,10 @@ const useStyles = makeStyles((theme) => ({
     // margin: theme.spacing(1),
     minWidth: 120,
   },
-  select : {
+  select: {
     paddingLeft: 5
   },
-  button : {
+  button: {
     margin: 10
   }
 }));
@@ -58,23 +59,29 @@ const Sidebar = () => {
   const [testDate, setTestdate] = useState('')
   const [autoTestDate, setautoTestdate] = useState('true')
   const [reminder, setReminder] = useState(userSetting.reminder)
-  const [sync, setSync] = useState(userSetting.sync)
   const [submitted, setSubmitted] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const classes = useStyles()
   const [open, setOpen] = useState(false);
 
+  console.log("USER SETTINGS: ", availableDays)
+
   useEffect(() => {
     setUsername(userSetting.username ? userSetting.username : '');
     setEmail(userSetting.email ? userSetting.email : '');
     setSelectedexamId(userSetting.selectedExamId ? userSetting.selectedExamId : '');
-    setAvailabledays(userSetting.workDays ? userSetting.workDays : weeks);
-    setHours(userSetting.workHours ? getTimeFromHours(userSetting.workHours): 0);
-    setMins(userSetting.workHours ? getTimeFromMins(userSetting.workHours): 0);
+    setAvailabledays(userSetting.workDays ? userSetting.workDays.map( (item, idx) => { 
+      return ({
+        workHour: item.workHour ? item.workHour : getTimeFromHours(userSetting.workHours), 
+        workMin: item.workMin ? item.workMin : getTimeFromMins(userSetting.workHours), 
+        ...item
+      }) 
+    } ) : weeks);
+    setHours(userSetting.workHours ? getTimeFromHours(userSetting.workHours) : 0);
+    setMins(userSetting.workHours ? getTimeFromMins(userSetting.workHours) : 0);
     setTestdate(userSetting.targetTestDate ? new Date(userSetting.targetTestDate) : new Date());
     setautoTestdate(userSetting.autoTestDate ? 'true' : 'false');
     setReminder(userSetting.reminder ? userSetting.reminder : false);
-    setSync(userSetting.sync ? userSetting.sync : false);
   }, [userSetting]);
 
   const handleUsername = useCallback((e) => {
@@ -83,7 +90,7 @@ const Sidebar = () => {
   }, [])
 
   const wholeSpentTime = useMemo(() => {
-    if(selectedExamId === '') return ''
+    if (selectedExamId === '') return ''
     const selectedExam = exams.filter(exam => exam._id === selectedExamId)
     return selectedExam.length > 0 && selectedExam[0].tasks.reduce((accu, task) => {
       return accu + task.time
@@ -111,8 +118,8 @@ const Sidebar = () => {
 
   const handleAllChecked = useCallback((event) => {
     let availabledays = availableDays
-   
-    availabledays.forEach(day => day.isChecked = event.target.checked) 
+
+    availabledays.forEach(day => day.isChecked = event.target.checked)
     setAvailabledays([...availableDays])
     setSubmitted(false);
   }, [availableDays])
@@ -121,8 +128,28 @@ const Sidebar = () => {
     let availabledays = availableDays
     availabledays.forEach(day => {
       if (day.value === event.target.value)
-        day.isChecked =  event.target.checked
-      })
+        day.isChecked = event.target.checked
+    })
+    setAvailabledays([...availableDays])
+    setSubmitted(false);
+  }, [availableDays])
+
+  const handleWorkHourChanged = useCallback(event => {
+    let availabledays = availableDays
+    availabledays.forEach(day => {
+      if (day.value === event.target.id)
+        day.workHour = Number(event.target.value)
+    })
+    setAvailabledays([...availableDays])
+    setSubmitted(false);
+  }, [availableDays])
+
+  const handleWorkMinChanged = useCallback(event => {
+    let availabledays = availableDays
+    availabledays.forEach(day => {
+      if (day.value === event.target.id)
+        day.workMin = Number(event.target.value)
+    })
     setAvailabledays([...availableDays])
     setSubmitted(false);
   }, [availableDays])
@@ -136,26 +163,35 @@ const Sidebar = () => {
     setTestdate(date)
     setSubmitted(false);
   }, [])
-  
+
   const handleReminder = useCallback((e) => {
     setReminder(e.target.checked)
     setSubmitted(false);
   }, [])
 
-  const handleSync = useCallback((e) => {
-    setSync(e.target.checked)
+  const handleHours = useCallback((e) => {
+    setHours(e.target.value)
+
+    setAvailabledays(userSetting.workDays ? userSetting.workDays.map( (item, idx) => {
+      return ({
+        ...item,
+        workHour: e.target.value, 
+        workMin: 0
+      })
+    }) : weeks);
+
+    setSubmitted(false);
+  }, [availableDays])
+
+  const handleMins = useCallback((e) => {
+    setMins(e.target.value)
+    setAvailabledays(userSetting.workDays ? userSetting.workDays.map( (item, idx) => ({
+      ...item,
+      workMin: e.target.value
+    })) : weeks);
     setSubmitted(false);
   }, [])
 
-  const handleHours = useCallback((e) => {
-    setHours(e.target.value)
-    setSubmitted(false);
-  }, [])
-  const handleMins = useCallback((e) => {
-    setMins(e.target.value)
-    setSubmitted(false);
-  }, [])
-  
   const loadHandler = useCallback(() => {
     setOpen(true)
   }, [setOpen])
@@ -168,28 +204,28 @@ const Sidebar = () => {
     let targetTestDate = testDate
     let auto = autoTestDate === 'true' ? true : false
     let data = {
-      username, email, selectedExamId, workDays: availableDays, workHours, reminder, sync, targetTestDate, autoTestDate : auto
+      username, email, selectedExamId, workDays: availableDays, workHours, reminder, targetTestDate, autoTestDate: auto
     }
     dispatch(scheduleAction.setSchedules(data))
-    
+
     setSubmitted(true)
-    
-  }, [dispatch, selectedExamId, availableDays, reminder, sync, hours, username, email, autoTestDate, testDate, mins])
+
+  }, [dispatch, selectedExamId, availableDays, reminder, hours, username, email, autoTestDate, testDate, mins])
 
   return (
     <div className='app-sidebar'>
       <ValidatorForm onSubmit={submitHandler} className={classes.root}>
         <div className="app-sidebar-logo">
           <a href="https://securitiesce.com">
-            <img src={logoImg} alt=""/>
+            <img src={logoImg} alt="" />
           </a>
         </div>
         <div className="app-sidebar-section">
           <h2>Username</h2>
-          <TextValidator 
-            id="username" 
-            value={username} 
-            onChange={handleUsername} 
+          <TextValidator
+            id="username"
+            value={username}
+            onChange={handleUsername}
             className={classes.forminput}
             validators={['required']}
             errorMessages={['This field is required']}
@@ -197,10 +233,10 @@ const Sidebar = () => {
         </div>
         <div className="app-sidebar-section">
           <h2>Email</h2>
-          <TextValidator 
-            id="email" 
-            value={email} 
-            onChange={handleEmail} 
+          <TextValidator
+            id="email"
+            value={email}
+            onChange={handleEmail}
             className={classes.forminput}
             validators={['required', 'isEmail']}
             errorMessages={['This field is required', 'Email is not valid']}
@@ -219,7 +255,7 @@ const Sidebar = () => {
               onChange={handleExamchange}
             >
               {exams && exams.map((exam, id) => (
-                <MenuItem value={exam._id} key={exam._id}>{ exam.name }</MenuItem>
+                <MenuItem value={exam._id} key={exam._id}>{exam.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -252,6 +288,34 @@ const Sidebar = () => {
                       }
                       label={day.value}
                     />
+                    {day.isChecked && (autoTestDate === 'true') && (
+                      <Grid container>
+                        <Grid item xs={6}>
+                          <TextValidator
+                            id={day.value}
+                            label="HH"
+                            name="HH"
+                            value={day.workHour }
+                            onChange={handleWorkHourChanged}
+                            className={classes.forminput}
+                            validators={['required', 'isNumber', 'minNumber:0', 'maxNumber:24']}
+                            errorMessages={['This field is required', 'Input must be number', 'Invalid Number', 'Invalid Number']}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextValidator
+                            id={day.value}
+                            label="MM"
+                            name="MM"
+                            value={day.workMin }
+                            onChange={handleWorkMinChanged}
+                            className={classes.forminput}
+                            validators={['required', 'isNumber', 'minNumber:0', 'maxNumber:59']}
+                            errorMessages={['This field is required', 'Input must be number', 'Invalid Number', 'Invalid Number']}
+                          />
+                        </Grid>
+                      </Grid>
+                    )}
                   </li>)
               })
             }
@@ -262,57 +326,56 @@ const Sidebar = () => {
           <FormControl component="fieldset">
             <FormLabel component="legend"></FormLabel>
             <RadioGroup aria-label="gender" name="gender1" value={autoTestDate} onChange={handleTestdate} >
-              <FormControlLabel value="true" control={<Radio color="primary"/>} label="Auto Test Date" />
+              <FormControlLabel value="true" control={<Radio color="primary" />} label="Auto Test Date" />
               {autoTestDate === 'true' && (
-                  <>
-                    
-                    <div className='app-sidebar-section subsection'>
-                      <h2>Hours per day</h2>
-                      <Grid container>
-                        <Grid item xs={6}>
-                          <TextValidator 
-                            label="HH"
-                            name="HH"
-                            value={hours} 
-                            onChange={handleHours} 
-                            className={classes.forminput}
-                            validators={['required', 'isNumber', 'minNumber:0', 'maxNumber:24']}
-                            errorMessages={['This field is required', 'Input must be number', 'Invalid Number', 'Invalid Number']}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <TextValidator
-                            label="MM" 
-                            name="MM"
-                            value={mins} 
-                            onChange={handleMins} 
-                            className={classes.forminput}
-                            validators={['required', 'isNumber', 'minNumber:0', 'maxNumber:59']}
-                            errorMessages={['This field is required', 'Input must be number', 'Invalid Number', 'Invalid Number']}
-                          />
-                        </Grid>
+                <>
+                  <div className='app-sidebar-section subsection'>
+                    <h2>Hours per day</h2>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <TextValidator
+                          label="HH"
+                          name="HH"
+                          value={hours}
+                          onChange={handleHours}
+                          className={classes.forminput}
+                          validators={['required', 'isNumber', 'minNumber:0', 'maxNumber:24']}
+                          errorMessages={['This field is required', 'Input must be number', 'Invalid Number', 'Invalid Number']}
+                        />
                       </Grid>
-                    </div>
-                  </>
+                      <Grid item xs={6}>
+                        <TextValidator
+                          label="MM"
+                          name="MM"
+                          value={mins}
+                          onChange={handleMins}
+                          className={classes.forminput}
+                          validators={['required', 'isNumber', 'minNumber:0', 'maxNumber:59']}
+                          errorMessages={['This field is required', 'Input must be number', 'Invalid Number', 'Invalid Number']}
+                        />
+                      </Grid>
+                    </Grid>
+                  </div>
+                </>
               )}
-              <FormControlLabel value="false" control={<Radio color="primary"/>} label="Your Test Date" />
+              <FormControlLabel value="false" control={<Radio color="primary" />} label="Your Test Date" />
               {autoTestDate === 'false' && (
                 <div>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    disableToolbar
-                    variant="inline"
-                    format="MM/dd/yyyy"
-                    margin="normal"
-                    id="date-picker-inline"
-                    // label="Test Date"
-                    value={testDate}
-                    onChange={handleSetDate}
-                    KeyboardButtonProps={{
-                      'aria-label': 'change date',
-                    }}
-                    style={{margin: '0 2em'}}
-                  />
+                    <KeyboardDatePicker
+                      disableToolbar
+                      variant="inline"
+                      format="MM/dd/yyyy"
+                      margin="normal"
+                      id="date-picker-inline"
+                      // label="Test Date"
+                      value={testDate}
+                      onChange={handleSetDate}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                      }}
+                      style={{ margin: '0 2em' }}
+                    />
                   </MuiPickersUtilsProvider>
                 </div>
               )}
@@ -332,17 +395,6 @@ const Sidebar = () => {
             }
             label="Email Reminder"
           />
-          <FormControlLabel
-            control={
-              <Checkbox
-                onChange={handleSync}
-                checked={sync}
-                name="checkedB"
-                color="primary"
-              />
-            }
-            label="Sync to Google or other calendar"
-          />
         </div>
         <div className="app-sidebar-section flex-center">
           <Button variant="contained" color="primary" className={classes.button} disabled={loaded} onClick={loadHandler}>
@@ -353,10 +405,10 @@ const Sidebar = () => {
           </Button>
         </div>
       </ValidatorForm>
-      <LoadModal 
-        open={ open }
-        setOpen={ setOpen }
-        // loadData={ loadData }
+      <LoadModal
+        open={open}
+        setOpen={setOpen}
+      // loadData={ loadData }
       />
     </div>
   )

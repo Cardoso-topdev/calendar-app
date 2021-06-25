@@ -42,14 +42,15 @@ if (process.env.NODE_ENV === 'production') {
   app.get('/', (req, res) => {
     res.send('API is running....')
   })
-}
+} 
 
 app.use(notFound)
 app.use(errorHandler)
 
 const PORT = process.env.PORT
 
-cron.schedule('0 0 * * *', () => {
+cron.schedule('0 12 * * *', () => {
+  console.log("Cron job working...")
   emailReminder()
 });
 

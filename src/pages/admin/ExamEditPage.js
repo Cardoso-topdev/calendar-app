@@ -13,6 +13,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 import EditExamModal from '../../components/modals/EditExamModal';
+import EdittaskModal from '../../components/modals/EdittaskModal';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -82,7 +83,9 @@ const ExamEditPage = () => {
   const navigate= useNavigate()
   const classes = useStyles()
   const theme = useTheme();
-  const { exams } = useSelector(state => state.exams)
+  const { exams } = useSelector( state => state.exams )
+  const { tasks } = useSelector( state => state.tasks)
+
   const { taskTypes } = useSelector(state => state.taskTypes)
   const dispatch = useDispatch()
   
@@ -93,7 +96,7 @@ const ExamEditPage = () => {
   }, [state, exams])
 
   const [ examName, setExamname] = useState(selectedExam ? selectedExam.name : '')
-  const [ tasks, setTasks] = useState(selectedExam ? selectedExam.tasks : [])
+  const [ selectedTasks, setTasks] = useState(selectedExam ? selectedExam.tasks : [])
 
   const title = useMemo(() => {
     if(!state) return 'Add Exam'
@@ -101,6 +104,8 @@ const ExamEditPage = () => {
   }, [state])
 
   const [open, setOpen] = React.useState(false);
+  const [taskModalOpen, setTaskModalOpen] = React.useState(false)
+
   const [isLoading, setIsloading] = React.useState(true);
   //create the flag which decides the modal type of Add or update modal.
   const [isAdd, setIsAdd] = React.useState({isAdd: true});
@@ -130,14 +135,14 @@ const ExamEditPage = () => {
   const handleSave = useCallback((e) => {
     e.preventDefault()
     if(!state) {
-      dispatch(examsAction.addExam({name: examName, tasks: tasks}))
+      dispatch(examsAction.addExam({name: examName, tasks: selectedTasks}))
       navigate('/admin/exams')
       setIsloading(true)
     } else {
-      dispatch(examsAction.updateExam({_id: state.id, name: examName, tasks: tasks}))
+      dispatch(examsAction.updateExam({_id: state.id, name: examName, tasks: selectedTasks}))
       setIsloading(true)
     }
-  }, [dispatch, examName, tasks, state, navigate])
+  }, [dispatch, examName, selectedTasks, state, navigate])
 
   return (
     <>
@@ -183,7 +188,7 @@ const ExamEditPage = () => {
                 aria-label="scrollable auto tabs example"
               >
                 {
-                  taskTypes.filter((item, idx) => (idx !== 1)).map((type, index) => (
+                  taskTypes.map((type, index) => (
                     <Tab label={type.name} {...a11yProps(index)} key={type._id}/>
                   ))
                 }
@@ -195,15 +200,16 @@ const ExamEditPage = () => {
               onChangeIndex={handleChangeIndex}
             >
               {
-                taskTypes.filter((item, idx) => (idx !== 1)).map((type, index) => (
+                taskTypes.map((type, index) => (
                   <TabPanel value={tabValue} index={index} key={type._id}>
                     <EnhancedTable 
-                      feedData={tasks} 
+                      feedData={selectedTasks} 
                       setOpen={setOpen} 
                       setIsAdd={setIsAdd} 
                       tabValue={tabValue} 
                       setTasks={setTasks} 
-                      setIsloading={setIsloading}/>
+                      setIsloading={setIsloading}
+                      setTaskModalOpen={setTaskModalOpen}/>
                   </TabPanel>
                 ))
               }
@@ -216,7 +222,23 @@ const ExamEditPage = () => {
       </form>
       {
         open &&
-        <EditExamModal feedData={tasks} open={open} setOpen={setOpen} isAdd={isAdd} tabValue={tabValue} setTasks={setTasks} setIsloading={setIsloading}/>
+        <EditExamModal 
+          feedData={selectedTasks} 
+          open={open} 
+          setOpen={setOpen} 
+          isAdd={isAdd} 
+          tabValue={tabValue} 
+          setTasks={setTasks} 
+          setIsloading={setIsloading}/>
+      }
+      {
+        taskModalOpen &&
+        <EdittaskModal 
+          feedData={tasks} 
+          open={taskModalOpen} 
+          setOpen={setTaskModalOpen} 
+          isAdd={isAdd} 
+          pageIndex="1"/>
       }
     </>
   )
